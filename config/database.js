@@ -5,6 +5,9 @@ const sequelize = new Sequelize('portafolio_p', 'root', '', {
     host: 'localhost',
     dialect: 'mysql',
     logging: false, // Desactivar el logging
+    define: {
+        timestamps: false, // Desactivar la creación de campos de fecha y hora
+    },
 
 });
 

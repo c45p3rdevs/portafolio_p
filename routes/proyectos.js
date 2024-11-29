@@ -15,30 +15,41 @@ router.get('/', async (req, res) => {
 
     //crear un proyecto nuevo
 
-router.post('/', async (req, res) => {
-    try {
-        const { nombre, descripcion, fechaEntrega, cumplimiento } = req.body;
-
-        //Se valido que los campos requeridos esten presentes 
-        if (!nombre || !descripcion || !fechaEntrega || !cumplimiento === undefined) {
-            return res.status(400).json({message: 'Faltan campos requeridos'});
-        }
-
-        const nuevoProyecto = await Proyecto.create({
-            nombre,
-            descripcion,
-            fechaEntrega,
-            cumplimiento,
-        });
-
-        res.status(201).json({
-            message: 'Proyecto creado con exito',
-            proyecto: nuevoProyecto,
-        });
+    router.post('/', async (req, res) => {
+        try {
+            const { 
+                nombre, 
+                descripcion, 
+                fecha_estimada, 
+                fecha_real, 
+                cumplimiento, 
+                evidencia, 
+                observaciones 
+            } = req.body;
+    
+            // Validar que los campos requeridos estén presentes
+            if (!nombre || !descripcion || !fecha_estimada || cumplimiento === undefined) {
+                return res.status(400).json({ message: 'Faltan campos requeridos' });
+            }
+    
+            const nuevoProyecto = await Proyecto.create({
+                nombre,
+                descripcion,
+                fecha_estimada,
+                fecha_real,
+                cumplimiento,
+                evidencia,
+                observaciones,
+            });
+    
+            res.status(201).json({
+                message: 'Proyecto creado con éxito',
+                proyecto: nuevoProyecto,
+            });
         } catch (error) {
-            console.error('Error al crear el proyecto', error.message); //log para depurar
-            res.status(500).json({message: 'Error al crear el proyecto', error: error.message});
-        }    
-});
+            console.error('Error al crear el proyecto:', error.message);
+            res.status(500).json({ message: 'Error al crear el proyecto', error: error.message });
+        }
+    });
 
 module.exports = router;
