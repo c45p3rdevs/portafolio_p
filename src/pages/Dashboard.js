@@ -48,8 +48,20 @@ const Dashboard = () => {
 
     try {
       const response = await createProyecto(nuevoProyecto);
-      alert(`Proyecto creado: ${response.nombre}`);
-      setProyectos([...proyectos, response]); // Actualizar la lista de proyectos
+
+      // Mostrar nombre del proyecto recién creado
+      alert(`Proyecto creado: ${response.nombre || 'Sin nombre'}`);
+
+      // Actualizar la lista de proyectos
+      setProyectos([...proyectos, response]);
+
+      // Actualizar métricas
+      setTotalProyectos((prev) => prev + 1);
+      if (cumplimiento === 'Sí') {
+        setProyectosCompletados((prev) => prev + 1);
+      } else {
+        setProyectosPendientes((prev) => prev + 1);
+      }
 
       // Limpiar el formulario
       setNombre('');
@@ -97,6 +109,34 @@ const Dashboard = () => {
         </nav>
 
         <h2 className="text-center mb-4">Dashboard de Proyectos</h2>
+
+        {/* Cards */}
+        <div className="row mb-4">
+          <div className="col-md-4">
+            <div className="card custom-card bg-primary text-white shadow">
+              <div className="card-body">
+                <h5 className="card-title">Total de Proyectos</h5>
+                <p className="card-text display-4">{totalProyectos}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card custom-card bg-success text-white shadow">
+              <div className="card-body">
+                <h5 className="card-title">Proyectos Completados</h5>
+                <p className="card-text display-4">{proyectosCompletados}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card custom-card bg-danger text-white shadow">
+              <div className="card-body">
+                <h5 className="card-title">Proyectos Pendientes</h5>
+                <p className="card-text display-4">{proyectosPendientes}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Formulario para agregar proyectos */}
         <div className="mb-4">
