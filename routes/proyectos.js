@@ -52,4 +52,19 @@ router.get('/', async (req, res) => {
         }
     });
 
+    const { body,validationResult } = require('express-validator');
+    router.post(
+        '/',
+        [
+            body('nombre').notEmpty().withMessage('El nombre es requerido'),
+            body('fecha_estimada').notEmpty().withMessage('La fecha debe ser valida'),
+        ],
+        async (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+        }
+    );
+
 module.exports = router;

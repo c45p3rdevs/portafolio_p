@@ -15,7 +15,7 @@ const Archivo = sequelize.define('Archivo', {
         },
 
         tipo_archivo:{
-            type: DataTypes.ENUM('imagen', ' documento', 'otro'),
+            type: DataTypes.ENUM('imagen', 'documento', 'otro'),
             defaultValue: 'otro',
         },
         tamano: {
