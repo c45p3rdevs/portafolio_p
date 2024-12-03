@@ -128,3 +128,169 @@
 .card-text {
     font-size: 2.5rem;
 }
+
+/* Animación para el modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    animation: slideIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Estilo para las tarjetas */
+  .modern-card {
+    position: relative;
+    color: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .modern-card.bg-gradient-primary {
+    background: linear-gradient(135deg, #ff7eb3, #ff758c);
+  }
+  
+  .modern-card.bg-gradient-success {
+    background: linear-gradient(135deg, #42e695, #3bb2b8);
+  }
+  
+  .modern-card.bg-gradient-danger {
+    background: linear-gradient(135deg, #ff6a88, #ff99ac);
+  }
+  
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+  }
+  
+  /* Ajuste para el modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Asegura que esté por encima del resto */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    max-width: 90%; /* Para asegurar compatibilidad con pantallas pequeñas */
+    animation: slideIn 0.5s ease-in-out;
+    z-index: 1060; /* Por encima del modal-overlay */
+}
+
+/* Evita que el contenido detrás del modal sea accesible o visible */
+body.modal-open {
+    overflow: hidden; /* Evita scroll cuando el modal está abierto */
+}
+
+/* Ajuste del botón cerrar en el modal */
+.modal-header .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.modal-header .close-button:hover {
+    color: #333;
+}
+
+/* Ajuste para el modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Asegura que esté por encima del resto */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    max-width: 90%; /* Para asegurar compatibilidad con pantallas pequeñas */
+    animation: slideIn 0.5s ease-in-out;
+    z-index: 1060; /* Por encima del modal-overlay */
+}
+
+/* Evita que el contenido detrás del modal sea accesible o visible */
+body.modal-open {
+    overflow: hidden; /* Evita scroll cuando el modal está abierto */
+}
+
+/* Ajuste del botón cerrar en el modal */
+.modal-header .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.modal-header .close-button:hover {
+    color: #333;
+}
+
