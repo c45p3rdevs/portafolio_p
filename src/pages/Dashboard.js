@@ -52,8 +52,9 @@ const Dashboard = () => {
       // Mostrar nombre del proyecto recién creado
       alert(`Proyecto creado: ${response.nombre || 'Sin nombre'}`);
 
-      // Actualizar la lista de proyectos
-      setProyectos([...proyectos, response]);
+      // Actualizar la lista de proyectos inmediatamente
+      const proyectoConId = { ...nuevoProyecto, id: response.id || Date.now() };
+      setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
 
       // Actualizar métricas
       setTotalProyectos((prev) => prev + 1);
