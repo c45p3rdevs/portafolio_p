@@ -15,10 +15,10 @@
     width: 250px;
     min-height: 100vh;
     position: fixed;
-    top: 80px; /* Ajustamos el top para que no quede debajo del navbar */
+    top: 80px;
     left: 0;
-    background-color: #f8f9fa; /* Color de fondo del sidebar */
-    z-index: 1040; /* Para que el sidebar quede debajo del navbar */
+    background-color: #f8f9fa;
+    z-index: 1040;
     border-right: 1px solid #ddd;
     padding-top: 10px;
 }
@@ -81,216 +81,179 @@
 
 /* Contenido principal */
 .main-content {
-    margin-left: 250px; /* Asegura que el contenido no se solape con el sidebar */
-    margin-top: 80px; /* Ajusta el margen superior para que no se solape con el navbar */
+    margin-left: 250px;
+    margin-top: 80px;
     padding: 20px;
     flex-grow: 1;
 }
 
 /* Card Styles */
-.custom-card {
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.custom-card:hover {
-    transform: translateY(-5px);
-}
-
-.icon-large {
-    font-size: 3rem;
-    opacity: 0.8;
-}
-
-/* Table Styles */
-.table-responsive {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: #f9f9f9;
-}
-
-.table-striped tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Adjust Card Text Sizes */
-.card-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-.card-text {
-    font-size: 2.5rem;
-}
-
-/* Animación para el modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .modal-content {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 400px;
-    animation: slideIn 0.5s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideIn {
-    from {
-      transform: translateY(-50px);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-  
-  /* Estilo para las tarjetas */
-  .modern-card {
+.modern-card {
     position: relative;
     color: #fff;
     border-radius: 15px;
     overflow: hidden;
     padding: 20px;
     text-align: center;
-  }
-  
-  .modern-card.bg-gradient-primary {
+    animation: cardFadeIn 0.7s ease-in-out;
+}
+
+.modern-card.bg-gradient-primary {
     background: linear-gradient(135deg, #ff7eb3, #ff758c);
-  }
-  
-  .modern-card.bg-gradient-success {
+}
+
+.modern-card.bg-gradient-success {
     background: linear-gradient(135deg, #42e695, #3bb2b8);
-  }
-  
-  .modern-card.bg-gradient-danger {
+}
+
+.modern-card.bg-gradient-danger {
     background: linear-gradient(135deg, #ff6a88, #ff99ac);
-  }
-  
-  .card-icon {
+}
+
+.card-icon {
     width: 50px;
     height: 50px;
     margin-bottom: 10px;
-  }
-  
-  /* Ajuste para el modal */
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modal Overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.85); /* Fondo negro opaco */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1050; /* Asegura que esté por encima del resto */
-    animation: fadeIn 0.5s ease-in-out;
+    z-index: 1050;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Modal Content */
 .modal-content {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 400px;
-    max-width: 90%; /* Para asegurar compatibilidad con pantallas pequeñas */
-    animation: slideIn 0.5s ease-in-out;
-    z-index: 1060; /* Por encima del modal-overlay */
+    background-color: #ffffff; /* Fondo blanco sólido */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Sombra más marcada */
+    width: 500px; /* Ancho fijo */
+    max-width: 90%; /* Para pantallas pequeñas */
+    animation: slideIn 0.3s ease-in-out;
+    z-index: 1060;
+    overflow: hidden; /* Evita que el contenido sobresalga */
 }
 
-/* Evita que el contenido detrás del modal sea accesible o visible */
-body.modal-open {
-    overflow: hidden; /* Evita scroll cuando el modal está abierto */
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-/* Ajuste del botón cerrar en el modal */
-.modal-header .close-button {
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.close-button {
     background: none;
     border: none;
     font-size: 1.5rem;
     color: #999;
     cursor: pointer;
-    transition: color 0.3s ease;
-    position: absolute;
-    top: 10px;
-    right: 10px;
 }
 
-.modal-header .close-button:hover {
-    color: #333;
+.close-button:hover {
+    color: #000;
 }
 
-/* Ajuste para el modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* Modal Body */
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Modal Footer */
+.modal-footer {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1050; /* Asegura que esté por encima del resto */
-    animation: fadeIn 0.5s ease-in-out;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-.modal-content {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 400px;
-    max-width: 90%; /* Para asegurar compatibilidad con pantallas pequeñas */
-    animation: slideIn 0.5s ease-in-out;
-    z-index: 1060; /* Por encima del modal-overlay */
-}
-
-/* Evita que el contenido detrás del modal sea accesible o visible */
-body.modal-open {
-    overflow: hidden; /* Evita scroll cuando el modal está abierto */
-}
-
-/* Ajuste del botón cerrar en el modal */
-.modal-header .close-button {
-    background: none;
+.modal-footer .btn-primary {
+    background-color: #037ef3;
+    color: #fff;
     border: none;
-    font-size: 1.5rem;
-    color: #999;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
-    transition: color 0.3s ease;
-    position: absolute;
-    top: 10px;
-    right: 10px;
 }
 
-.modal-header .close-button:hover {
+.modal-footer .btn-primary:hover {
+    background-color: #025bb5;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #ddd;
     color: #333;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #bbb;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-30px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
 }
 

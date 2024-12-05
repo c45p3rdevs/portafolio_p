@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/dashboard.css';
-import { createProyecto, getProyectos } from '../services/proyectos';
+import {
+  createProyecto,
+  getProyectos,
+  updateProyecto,
+  deleteProyecto,
+} from '../services/proyectos';
 
 const Dashboard = () => {
   const [proyectos, setProyectos] = useState([]);
@@ -14,6 +19,7 @@ const Dashboard = () => {
   const [cumplimiento, setCumplimiento] = useState('No');
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editando, setEditando] = useState(null); // Estado para proyecto en edición
 
   useEffect(() => {
     const fetchProyectos = async () => {
@@ -45,17 +51,27 @@ const Dashboard = () => {
     };
 
     try {
-      const response = await createProyecto(nuevoProyecto);
-
-      alert(`Proyecto creado: ${response.nombre || 'Exito al crearlo'}`);
-      const proyectoConId = { ...nuevoProyecto, id: response.id || Date.now() };
-      setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
-
-      setTotalProyectos((prev) => prev + 1);
-      if (cumplimiento === 'Sí') {
-        setProyectosCompletados((prev) => prev + 1);
+      if (editando) {
+        // Editar proyecto existente
+        const actualizado = await updateProyecto(editando.id, nuevoProyecto);
+        setProyectos((prevProyectos) =>
+          prevProyectos.map((p) =>
+            p.id === editando.id ? { ...p, ...actualizado } : p
+          )
+        );
+        setEditando(null);
       } else {
-        setProyectosPendientes((prev) => prev + 1);
+        // Crear nuevo proyecto
+        const response = await createProyecto(nuevoProyecto);
+        const proyectoConId = { ...nuevoProyecto, id: response.id || Date.now() };
+        setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
+
+        setTotalProyectos((prev) => prev + 1);
+        if (cumplimiento === 'Sí') {
+          setProyectosCompletados((prev) => prev + 1);
+        } else {
+          setProyectosPendientes((prev) => prev + 1);
+        }
       }
 
       setNombre('');
@@ -64,9 +80,31 @@ const Dashboard = () => {
       setCumplimiento('No');
       handleCloseModal();
     } catch (error) {
-      console.error('Error al crear el proyecto:', error);
-      setError('No se pudo agregar el proyecto. Verifica los datos ingresados.');
+      console.error('Error al procesar el proyecto:', error);
+      setError('No se pudo procesar el proyecto. Verifica los datos ingresados.');
     }
+  };
+
+  const handleEliminarProyecto = async (id) => {
+    try {
+      await deleteProyecto(id);
+      setProyectos((prevProyectos) =>
+        prevProyectos.filter((proyecto) => proyecto.id !== id)
+      );
+      setTotalProyectos((prev) => prev - 1);
+    } catch (error) {
+      console.error('Error al eliminar el proyecto:', error);
+      setError('No se pudo eliminar el proyecto.');
+    }
+  };
+
+  const handleEditarProyecto = (proyecto) => {
+    setEditando(proyecto);
+    setNombre(proyecto.nombre);
+    setDescripcion(proyecto.descripcion);
+    setFechaEstimada(proyecto.fecha_estimada);
+    setCumplimiento(proyecto.cumplimiento);
+    handleOpenModal();
   };
 
   const handleOpenModal = () => {
@@ -77,6 +115,11 @@ const Dashboard = () => {
   const handleCloseModal = () => {
     document.body.classList.remove('modal-open'); // Habilita scroll al cerrar
     setShowModal(false);
+    setEditando(null); // Reinicia el estado de edición
+    setNombre('');
+    setDescripcion('');
+    setFechaEstimada('');
+    setCumplimiento('No');
   };
 
   return (
@@ -119,11 +162,6 @@ const Dashboard = () => {
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-primary shadow">
               <div className="card-body">
-                <img
-                  src="https://via.placeholder.com/50/ff758c/ffffff?text=Proyectos"
-                  alt="icon"
-                  className="card-icon"
-                />
                 <h5 className="card-title">Total de Proyectos</h5>
                 <p className="card-text display-4">{totalProyectos}</p>
               </div>
@@ -132,11 +170,6 @@ const Dashboard = () => {
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-success shadow">
               <div className="card-body">
-                <img
-                  src="https://via.placeholder.com/50/3bb2b8/ffffff?text=Completados"
-                  alt="icon"
-                  className="card-icon"
-                />
                 <h5 className="card-title">Proyectos Completados</h5>
                 <p className="card-text display-4">{proyectosCompletados}</p>
               </div>
@@ -145,11 +178,6 @@ const Dashboard = () => {
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-danger shadow">
               <div className="card-body">
-                <img
-                  src="https://via.placeholder.com/50/ff99ac/ffffff?text=Pendientes"
-                  alt="icon"
-                  className="card-icon"
-                />
                 <h5 className="card-title">Proyectos Pendientes</h5>
                 <p className="card-text display-4">{proyectosPendientes}</p>
               </div>
@@ -159,7 +187,7 @@ const Dashboard = () => {
 
         {/* Botón para abrir modal */}
         <button className="btn btn-primary mb-3" onClick={handleOpenModal}>
-          Agregar Proyecto
+          {editando ? 'Editar Proyecto' : 'Agregar Proyecto'}
         </button>
 
         {/* Modal */}
@@ -167,7 +195,9 @@ const Dashboard = () => {
           <div className="modal-overlay">
             <div className="modal-content">
               <div className="modal-header">
-                <h3 className="modal-title">Agregar Proyecto</h3>
+                <h3 className="modal-title">
+                  {editando ? 'Editar Proyecto' : 'Agregar Proyecto'}
+                </h3>
                 <button
                   type="button"
                   className="close-button"
@@ -221,7 +251,7 @@ const Dashboard = () => {
                   {error && <div className="alert alert-danger">{error}</div>}
                   <div className="modal-footer">
                     <button type="submit" className="btn btn-primary">
-                      Guardar Proyecto
+                      {editando ? 'Guardar Cambios' : 'Guardar Proyecto'}
                     </button>
                     <button
                       type="button"
@@ -262,8 +292,18 @@ const Dashboard = () => {
                     <td>{proyecto.fecha_real || 'No definida'}</td>
                     <td>{proyecto.cumplimiento}</td>
                     <td>
-                      <button className="btn btn-primary btn-sm">Editar</button>
-                      <button className="btn btn-danger btn-sm ml-2">Eliminar</button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleEditarProyecto(proyecto)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm ml-2"
+                        onClick={() => handleEliminarProyecto(proyecto.id)}
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 ))
