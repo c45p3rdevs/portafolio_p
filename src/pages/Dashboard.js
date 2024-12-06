@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; // Asegúrate de importar Link
 import '../styles/dashboard.css';
 import {
   createProyecto,
@@ -19,7 +20,7 @@ const Dashboard = () => {
   const [cumplimiento, setCumplimiento] = useState('No');
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editando, setEditando] = useState(null); // Estado para proyecto en edición
+  const [editando, setEditando] = useState(null);
 
   useEffect(() => {
     const fetchProyectos = async () => {
@@ -52,7 +53,6 @@ const Dashboard = () => {
 
     try {
       if (editando) {
-        // Editar proyecto existente
         const actualizado = await updateProyecto(editando.id, nuevoProyecto);
         setProyectos((prevProyectos) =>
           prevProyectos.map((p) =>
@@ -61,7 +61,6 @@ const Dashboard = () => {
         );
         setEditando(null);
       } else {
-        // Crear nuevo proyecto
         const response = await createProyecto(nuevoProyecto);
         const proyectoConId = { ...nuevoProyecto, id: response.id || Date.now() };
         setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
@@ -108,14 +107,14 @@ const Dashboard = () => {
   };
 
   const handleOpenModal = () => {
-    document.body.classList.add('modal-open'); // Evita scroll en el fondo
+    document.body.classList.add('modal-open');
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    document.body.classList.remove('modal-open'); // Habilita scroll al cerrar
+    document.body.classList.remove('modal-open');
     setShowModal(false);
-    setEditando(null); // Reinicia el estado de edición
+    setEditando(null);
     setNombre('');
     setDescripcion('');
     setFechaEstimada('');
@@ -129,14 +128,19 @@ const Dashboard = () => {
         <nav>
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
-              <a href="#">
+              <Link to="/">
                 <i className="bi bi-house-door-fill"></i> Inicio
-              </a>
+              </Link>
             </li>
             <li className="list-group-item">
-              <a href="#">
+              <Link to="/proyectos">
                 <i className="bi bi-card-list"></i> Proyectos
-              </a>
+              </Link>
+            </li>
+            <li className="list-group-item">
+              <Link to="/proyectos/vista">
+                <i className="bi bi-eye-fill"></i> Vista Proyectos
+              </Link>
             </li>
             <li className="list-group-item">
               <a href="#">
@@ -185,9 +189,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Botón para abrir modal */}
-        <button className="btn btn-primary mb-3" onClick={handleOpenModal}>
-          {editando ? 'Editar Proyecto' : 'Agregar Proyecto'}
+        {/* Floating Button */}
+        <button
+          className="floating-button"
+          onClick={handleOpenModal}
+          title={editando ? 'Editar Proyecto' : 'Agregar Proyecto'}
+        >
+          <i className="bi bi-plus-circle"></i>
         </button>
 
         {/* Modal */}
