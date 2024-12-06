@@ -7,6 +7,8 @@ import {
   updateProyecto,
   deleteProyecto,
 } from '../services/proyectos';
+import { Pie, Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 const Dashboard = () => {
   const [proyectos, setProyectos] = useState([]);
@@ -27,13 +29,11 @@ const Dashboard = () => {
       try {
         const data = await getProyectos();
         setProyectos(data);
-
         setTotalProyectos(data.length);
         setProyectosCompletados(data.filter((p) => p.cumplimiento === 'Sí').length);
         setProyectosPendientes(data.filter((p) => p.cumplimiento === 'No').length);
       } catch (error) {
         console.error('Error al obtener los proyectos:', error);
-        setError('No se pudieron cargar los proyectos.');
       }
     };
 
@@ -84,28 +84,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleEliminarProyecto = async (id) => {
-    try {
-      await deleteProyecto(id);
-      setProyectos((prevProyectos) =>
-        prevProyectos.filter((proyecto) => proyecto.id !== id)
-      );
-      setTotalProyectos((prev) => prev - 1);
-    } catch (error) {
-      console.error('Error al eliminar el proyecto:', error);
-      setError('No se pudo eliminar el proyecto.');
-    }
-  };
-
-  const handleEditarProyecto = (proyecto) => {
-    setEditando(proyecto);
-    setNombre(proyecto.nombre);
-    setDescripcion(proyecto.descripcion);
-    setFechaEstimada(proyecto.fecha_estimada);
-    setCumplimiento(proyecto.cumplimiento);
-    handleOpenModal();
-  };
-
   const handleOpenModal = () => {
     document.body.classList.add('modal-open');
     setShowModal(true);
@@ -119,6 +97,30 @@ const Dashboard = () => {
     setDescripcion('');
     setFechaEstimada('');
     setCumplimiento('No');
+  };
+
+  // Datos para gráficos
+  const pieData = {
+    labels: ['Completados', 'Pendientes'],
+    datasets: [
+      {
+        data: [proyectosCompletados, proyectosPendientes],
+        backgroundColor: ['#4CAF50', '#FF5722'],
+      },
+    ],
+  };
+
+  const barData = {
+    labels: proyectos.map((proyecto) => proyecto.nombre),
+    datasets: [
+      {
+        label: 'Proyectos por estado',
+        data: proyectos.map((proyecto) =>
+          proyecto.cumplimiento === 'Sí' ? 100 : proyecto.cumplimiento === 'No' ? 0 : 50
+        ),
+        backgroundColor: '#03A9F4',
+      },
+    ],
   };
 
   return (
@@ -189,7 +191,23 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Floating Button */}
+        {/* Gráficos */}
+        <div className="row">
+          <div className="col-md-6">
+            <div className="card shadow-sm p-3">
+              <h5 className="text-center">Distribución de Proyectos</h5>
+              <Pie data={pieData} />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card shadow-sm p-3">
+              <h5 className="text-center">Progreso de Proyectos</h5>
+              <Bar data={barData} />
+            </div>
+          </div>
+        </div>
+
+        {/* Botón flotante */}
         <button
           className="floating-button"
           onClick={handleOpenModal}
@@ -274,61 +292,13 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-
-        {/* Tabla de proyectos */}
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered">
-            <thead className="thead-dark">
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha Estimada</th>
-                <th>Fecha Real</th>
-                <th>Cumplimiento</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {proyectos.length > 0 ? (
-                proyectos.map((proyecto, index) => (
-                  <tr key={proyecto.id}>
-                    <td>{index + 1}</td>
-                    <td>{proyecto.nombre}</td>
-                    <td>{proyecto.descripcion}</td>
-                    <td>{proyecto.fecha_estimada}</td>
-                    <td>{proyecto.fecha_real || 'No definida'}</td>
-                    <td>{proyecto.cumplimiento}</td>
-                    <td>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleEditarProyecto(proyecto)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm ml-2"
-                        onClick={() => handleEliminarProyecto(proyecto.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="text-center">
-                    No hay proyectos disponibles.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+
+
+
 
