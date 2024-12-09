@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; // Asegúrate de importar Link
+import { Link } from 'react-router-dom';
 import '../styles/dashboard.css';
 import {
   createProyecto,
@@ -196,13 +196,17 @@ const Dashboard = () => {
           <div className="col-md-6">
             <div className="card shadow-sm p-3">
               <h5 className="text-center">Distribución de Proyectos</h5>
-              <Pie data={pieData} />
+              <div style={{ height: '250px', width: '100%' }}>
+                <Pie data={pieData} options={{ maintainAspectRatio: false }} />
+              </div>
             </div>
           </div>
           <div className="col-md-6">
             <div className="card shadow-sm p-3">
               <h5 className="text-center">Progreso de Proyectos</h5>
-              <Bar data={barData} />
+              <div style={{ height: '250px', width: '100%' }}>
+                <Bar data={barData} options={{ maintainAspectRatio: false }} />
+              </div>
             </div>
           </div>
         </div>
@@ -298,7 +302,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-
-
-
