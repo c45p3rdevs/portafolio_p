@@ -200,6 +200,11 @@
     font-family: Oswald;
 }
 
+.modal-title{
+    color: #f1f1f1;
+    font-family: Oswald;
+}
+
 /* Modal Footer */
 .modal-footer {
     display: flex;
