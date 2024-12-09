@@ -127,6 +127,14 @@ const Dashboard = () => {
     <div className="d-flex" style={{ height: '100vh' }}>
       {/* Sidebar */}
       <aside className="sidebar bg-light">
+        <div className="text-center py-4">
+          <img
+            src="https://i.ibb.co/Brtwrvn/logo202-DGSP.png"
+            alt="logo202-DGSP"
+            className="img-fluid"
+            style={{ maxHeight: '80px' }}
+          />
+        </div>
         <nav>
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
@@ -302,3 +310,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

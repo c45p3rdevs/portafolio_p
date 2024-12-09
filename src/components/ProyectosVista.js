@@ -38,6 +38,9 @@ const ProyectosVista = () => {
           color: 'white',
         }}
       >
+        <div className="text-center py-4">
+          
+        </div>
         <nav>
           <ul className="list-group list-group-flush">
             <li className="list-group-item" style={{ background: 'transparent' }}>
@@ -66,6 +69,16 @@ const ProyectosVista = () => {
 
       {/* Main content */}
       <div className="main-content p-4">
+        {/* Logo encima de las cards */}
+        <div className="text-center mb-4">
+          <img
+            src="https://i.ibb.co/Brtwrvn/logo202-DGSP.png"
+            alt="logo202-DGSP"
+            className="img-fluid"
+            style={{ maxHeight: '100px' }}
+          />
+        </div>
+
         <h2 className="text-center mb-4">Vista de Proyectos</h2>
 
         {/* Filtros */}
@@ -232,5 +245,7 @@ const ProyectosVista = () => {
 };
 
 export default ProyectosVista;
+
+
 
 
