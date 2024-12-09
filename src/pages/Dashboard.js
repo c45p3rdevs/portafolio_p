@@ -232,7 +232,7 @@ const Dashboard = () => {
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header" style={{ color: 'white' }}>
                 <h3 className="modal-title">
                   {editando ? 'Editar Proyecto' : 'Agregar Proyecto'}
                 </h3>
@@ -244,7 +244,7 @@ const Dashboard = () => {
                   &times;
                 </button>
               </div>
-              <div className="modal-body">
+              <div className="modal-body" style={{ color: 'white' }}>
                 <form onSubmit={handleAgregarProyecto}>
                   <div className="form-group">
                     <label>Nombre del Proyecto:</label>
@@ -286,7 +286,11 @@ const Dashboard = () => {
                       <option value="Sí">Sí</option>
                     </select>
                   </div>
-                  {error && <div className="alert alert-danger">{error}</div>}
+                  {error && (
+                    <div className="alert alert-danger" style={{ color: 'white' }}>
+                      {error}
+                    </div>
+                  )}
                   <div className="modal-footer">
                     <button type="submit" className="btn btn-primary">
                       {editando ? 'Guardar Cambios' : 'Guardar Proyecto'}
@@ -310,4 +314,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
 
