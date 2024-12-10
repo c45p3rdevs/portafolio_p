@@ -6,21 +6,26 @@ import {
   updateProyecto,
   deleteProyecto,
 } from '../services/proyectos';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const ProyectosVista = () => {
   const [proyectos, setProyectos] = useState([]);
   const [filtro, setFiltro] = useState('');
-  const [editando, setEditando] = useState(null); // Proyecto en edición
+  const [editando, setEditando] = useState(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaEstimada, setFechaEstimada] = useState('');
-  const [cumplimiento, setCumplimiento] = useState('');
+  const [cumplimiento, setCumplimiento] = useState(0); // Inicializado como número
 
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
         const data = await getProyectos();
-        setProyectos(data);
+        const proyectosConCumplimiento = data.map((proyecto) => ({
+          ...proyecto,
+          cumplimiento: parseInt(proyecto.cumplimiento) || 0,
+        }));
+        setProyectos(proyectosConCumplimiento);
       } catch (error) {
         console.error('Error al cargar proyectos:', error);
       }
@@ -34,7 +39,7 @@ const ProyectosVista = () => {
 
   const proyectosFiltrados = proyectos.filter((proyecto) => {
     if (!filtro) return true;
-    return proyecto.cumplimiento === filtro;
+    return parseInt(proyecto.cumplimiento) === parseInt(filtro);
   });
 
   const handleEditar = (proyecto) => {
@@ -45,24 +50,29 @@ const ProyectosVista = () => {
     setCumplimiento(proyecto.cumplimiento);
   };
 
-  const handleGuardarEdicion = async () => {
+  const handleGuardarEdicion = async (e) => {
+    e.preventDefault();
     try {
-      const actualizado = await updateProyecto(editando.id, {
+      const actualizado = {
         nombre,
         descripcion,
         fecha_estimada: fechaEstimada,
-        cumplimiento,
-      });
-      setProyectos((prev) =>
-        prev.map((p) => (p.id === editando.id ? actualizado : p))
+        cumplimiento: parseInt(cumplimiento),
+      };
+
+      const respuesta = await updateProyecto(editando.id, actualizado);
+
+      const proyectosActualizados = proyectos.map((p) =>
+        p.id === editando.id ? { ...p, ...respuesta } : p
       );
+      setProyectos(proyectosActualizados);
       setEditando(null);
       setNombre('');
       setDescripcion('');
       setFechaEstimada('');
-      setCumplimiento('');
+      setCumplimiento(0);
     } catch (error) {
-      console.error('Error al editar el proyecto:', error);
+      console.error('Error al guardar los cambios:', error);
     }
   };
 
@@ -86,8 +96,12 @@ const ProyectosVista = () => {
         }}
       >
         <div className="text-center py-4">
-        
-        
+          <img
+            src="https://i.ibb.co/Brtwrvn/logo202-DGSP.png"
+            alt="logo202-DGSP"
+            className="img-fluid"
+            style={{ maxHeight: '100px' }}
+          />
         </div>
         <nav>
           <ul className="list-group list-group-flush">
@@ -142,7 +156,10 @@ const ProyectosVista = () => {
           >
             En Progreso
           </button>
-          <button className="btn btn-success mx-2" onClick={() => filtrarProyectos('Sí')}>
+          <button
+            className="btn btn-success mx-2"
+            onClick={() => filtrarProyectos('Sí')}
+          >
             Completados
           </button>
         </div>
@@ -164,25 +181,27 @@ const ProyectosVista = () => {
                   <h5 className="card-title">{proyecto.nombre}</h5>
                   <p className="card-text">{proyecto.descripcion}</p>
                   <p>
-                    <strong>Estado:</strong>{' '}
-                    {proyecto.cumplimiento === 'Sí'
-                      ? 'Completado'
-                      : proyecto.cumplimiento === 'En progreso'
-                      ? 'En Progreso'
-                      : 'Por Hacer'}
+                    <strong>Estado:</strong> {proyecto.cumplimiento}%
                   </p>
                   <p>
                     <strong>Fecha Estimada:</strong> {proyecto.fecha_estimada}
                   </p>
 
+                  <ProgressBar
+                    now={proyecto.cumplimiento}
+                    label={`${proyecto.cumplimiento}%`}
+                    striped
+                    variant="success"
+                  />
+
                   <button
-                    className="btn btn-primary btn-sm me-2"
+                    className="btn btn-primary btn-sm me-2 mt-2"
                     onClick={() => handleEditar(proyecto)}
                   >
                     Editar
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm mt-2"
                     onClick={() => handleEliminar(proyecto.id)}
                   >
                     Eliminar
@@ -192,10 +211,6 @@ const ProyectosVista = () => {
             </div>
           ))}
         </div>
-
-        {proyectosFiltrados.length === 0 && (
-          <p className="text-center">No hay proyectos que coincidan con este filtro.</p>
-        )}
 
         {/* Tabla de Proyectos */}
         <div className="table-responsive mt-4">
@@ -219,7 +234,14 @@ const ProyectosVista = () => {
                   <td>{proyecto.descripcion}</td>
                   <td>{proyecto.fecha_estimada}</td>
                   <td>{proyecto.fecha_real || 'No definida'}</td>
-                  <td>{proyecto.cumplimiento}</td>
+                  <td>
+                    <ProgressBar
+                      now={proyecto.cumplimiento}
+                      label={`${proyecto.cumplimiento}%`}
+                      striped
+                      variant="info"
+                    />
+                  </td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
@@ -263,6 +285,7 @@ const ProyectosVista = () => {
                       className="form-control"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="form-group">
@@ -271,6 +294,7 @@ const ProyectosVista = () => {
                       className="form-control"
                       value={descripcion}
                       onChange={(e) => setDescripcion(e.target.value)}
+                      required
                     ></textarea>
                   </div>
                   <div className="form-group">
@@ -280,18 +304,20 @@ const ProyectosVista = () => {
                       className="form-control"
                       value={fechaEstimada}
                       onChange={(e) => setFechaEstimada(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="form-group">
-                    <label>Cumplimiento:</label>
-                    <select
+                    <label>Cumplimiento (%):</label>
+                    <input
+                      type="number"
                       className="form-control"
                       value={cumplimiento}
                       onChange={(e) => setCumplimiento(e.target.value)}
-                    >
-                      <option value="No">No</option>
-                      <option value="Sí">Sí</option>
-                    </select>
+                      max="100"
+                      min="0"
+                      required
+                    />
                   </div>
                   <div className="modal-footer">
                     <button type="submit" className="btn btn-primary">
@@ -316,6 +342,15 @@ const ProyectosVista = () => {
 };
 
 export default ProyectosVista;
+
+
+
+
+
+
+
+
+
 
 
 

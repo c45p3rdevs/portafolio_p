@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/dashboard.css';
 import {
   createProyecto,
   getProyectos,
   updateProyecto,
-  deleteProyecto,
 } from '../services/proyectos';
 import { Pie, Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -19,26 +18,42 @@ const Dashboard = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaEstimada, setFechaEstimada] = useState('');
-  const [cumplimiento, setCumplimiento] = useState('No');
+  const [cumplimiento, setCumplimiento] = useState(0); // Cumplimiento como número
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState(null);
 
+  const location = useLocation();
+
+  // Cargar proyectos al montar el componente o cambiar de vista
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
         const data = await getProyectos();
-        setProyectos(data);
-        setTotalProyectos(data.length);
-        setProyectosCompletados(data.filter((p) => p.cumplimiento === 'Sí').length);
-        setProyectosPendientes(data.filter((p) => p.cumplimiento === 'No').length);
+
+        // Aseguramos que el cumplimiento sea un número
+        const proyectosConCumplimiento = data.map((proyecto) => ({
+          ...proyecto,
+          cumplimiento: parseInt(proyecto.cumplimiento) || 0,
+        }));
+
+        setProyectos(proyectosConCumplimiento);
+
+        // Calculamos totales para gráficos
+        setTotalProyectos(proyectosConCumplimiento.length);
+        setProyectosCompletados(
+          proyectosConCumplimiento.filter((p) => p.cumplimiento === 100).length
+        );
+        setProyectosPendientes(
+          proyectosConCumplimiento.filter((p) => p.cumplimiento < 100).length
+        );
       } catch (error) {
         console.error('Error al obtener los proyectos:', error);
       }
     };
 
     fetchProyectos();
-  }, []);
+  }, [location]); // Dependencia en la ubicación para recargar los datos
 
   const handleAgregarProyecto = async (e) => {
     e.preventDefault();
@@ -48,7 +63,7 @@ const Dashboard = () => {
       nombre,
       descripcion,
       fecha_estimada: fechaEstimada,
-      cumplimiento,
+      cumplimiento: parseInt(cumplimiento),
     };
 
     try {
@@ -66,7 +81,7 @@ const Dashboard = () => {
         setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
 
         setTotalProyectos((prev) => prev + 1);
-        if (cumplimiento === 'Sí') {
+        if (parseInt(cumplimiento) === 100) {
           setProyectosCompletados((prev) => prev + 1);
         } else {
           setProyectosPendientes((prev) => prev + 1);
@@ -76,7 +91,7 @@ const Dashboard = () => {
       setNombre('');
       setDescripcion('');
       setFechaEstimada('');
-      setCumplimiento('No');
+      setCumplimiento(0);
       handleCloseModal();
     } catch (error) {
       console.error('Error al procesar el proyecto:', error);
@@ -96,7 +111,7 @@ const Dashboard = () => {
     setNombre('');
     setDescripcion('');
     setFechaEstimada('');
-    setCumplimiento('No');
+    setCumplimiento(0);
   };
 
   // Datos para gráficos
@@ -114,10 +129,8 @@ const Dashboard = () => {
     labels: proyectos.map((proyecto) => proyecto.nombre),
     datasets: [
       {
-        label: 'Proyectos por estado',
-        data: proyectos.map((proyecto) =>
-          proyecto.cumplimiento === 'Sí' ? 100 : proyecto.cumplimiento === 'No' ? 0 : 50
-        ),
+        label: 'Progreso (%)',
+        data: proyectos.map((proyecto) => parseInt(proyecto.cumplimiento) || 0),
         backgroundColor: '#03A9F4',
       },
     ],
@@ -276,15 +289,16 @@ const Dashboard = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Cumplimiento:</label>
-                    <select
+                    <label>Cumplimiento (%):</label>
+                    <input
+                      type="number"
                       className="form-control"
                       value={cumplimiento}
                       onChange={(e) => setCumplimiento(e.target.value)}
-                    >
-                      <option value="No">No</option>
-                      <option value="Sí">Sí</option>
-                    </select>
+                      required
+                      min="0"
+                      max="100"
+                    />
                   </div>
                   {error && (
                     <div className="alert alert-danger" style={{ color: 'white' }}>
@@ -314,5 +328,7 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
 
 
