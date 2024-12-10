@@ -96,12 +96,7 @@ const ProyectosVista = () => {
         }}
       >
         <div className="text-center py-4">
-          <img
-            src="https://i.ibb.co/Brtwrvn/logo202-DGSP.png"
-            alt="logo202-DGSP"
-            className="img-fluid"
-            style={{ maxHeight: '100px' }}
-          />
+         
         </div>
         <nav>
           <ul className="list-group list-group-flush">
@@ -140,7 +135,7 @@ const ProyectosVista = () => {
           />
         </div>
 
-        <h2 className="text-center mb-4">Vista de Proyectos</h2>
+        <h2 className="text-center mb-4">Panel de Proyectos</h2>
 
         {/* Filtros */}
         <div className="d-flex justify-content-center mb-4">

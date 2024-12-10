@@ -66,7 +66,7 @@ exports.loginUsuario = async (req, res) => {
             expiresIn: '1d',
         });
 
-        res.json({
+        res.status(200).json({
             message: 'Inicio de sesión exitoso.',
             token,
             usuario: {
@@ -77,7 +77,7 @@ exports.loginUsuario = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Error al iniciar sesión:', error);
+        console.error('Error al iniciar sesión:', error.message);
         res.status(500).json({ error: 'Error en el servidor.' });
     }
 };
@@ -86,7 +86,7 @@ exports.loginUsuario = async (req, res) => {
 exports.obtenerUsuarios = async (req, res) => {
     try {
         // Validación adicional: Asegurarnos de que la función esté protegida por middleware
-        if (!req.usuario || req.usuario.rol !== 'admin') {
+        if (!req.user || req.user.rol !== 'admin') {
             return res.status(403).json({ error: 'Acceso denegado: Solo para administradores.' });
         }
 
@@ -97,3 +97,4 @@ exports.obtenerUsuarios = async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor.' });
     }
 };
+

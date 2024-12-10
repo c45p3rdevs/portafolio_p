@@ -10,4 +10,5 @@ router.post('/login', loginUsuario); // Iniciar sesión
 // Rutas protegidas
 router.get('/', verificarToken, verificarAdmin, obtenerUsuarios); // Obtener todos los usuarios (Solo para administradores)
 
+
 module.exports = router;
