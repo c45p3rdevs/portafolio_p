@@ -9,13 +9,12 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    // Verificar el token con la clave secreta
-    const verified = jwt.verify(token, process.env.JWT_SECRET || 'claveSecreta');
-    req.user = verified; // Guardar los datos del usuario en el objeto request
-    next(); // Continuar al siguiente middleware o controlador
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'claveSecreta');
+    req.user = decoded;
+    next();
   } catch (error) {
     console.error('Error al verificar el token:', error.message);
-    return res.status(403).json({ message: 'Token no válido o expirado.' });
+    return res.status(403).json({ message: 'Token no válido.' });
   }
 };
 

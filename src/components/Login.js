@@ -10,6 +10,12 @@ const Login = ({ setAuthData }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Validar que setAuthData sea una función
+  if (!setAuthData || typeof setAuthData !== 'function') {
+    console.error('Error: setAuthData no se pasó correctamente como prop o no es una función.');
+    return <div>Error crítico en el componente Login.</div>;
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
