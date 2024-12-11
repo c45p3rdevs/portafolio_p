@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/dashboard.css';
 import {
   createProyecto,
@@ -15,31 +15,45 @@ const Dashboard = () => {
   const [proyectosCompletados, setProyectosCompletados] = useState(0);
   const [proyectosPendientes, setProyectosPendientes] = useState(0);
 
+  const [usuario, setUsuario] = useState(null); // Almacena datos del usuario autenticado
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaEstimada, setFechaEstimada] = useState('');
-  const [cumplimiento, setCumplimiento] = useState(0); // Cumplimiento como número
+  const [cumplimiento, setCumplimiento] = useState(0);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Cargar proyectos al montar el componente o cambiar de vista
+  // Cargar usuario autenticado al montar el componente
+  useEffect(() => {
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    if (authData && authData.token) {
+      setUsuario(authData.usuario); // Almacena el nombre del usuario
+    } else {
+      navigate('/'); // Redirige al login si no hay sesión
+    }
+  }, [navigate]);
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem('authData');
+    navigate('/'); // Redirige al login
+  };
+
+  // Cargar proyectos
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
         const data = await getProyectos();
-
-        // Aseguramos que el cumplimiento sea un número
         const proyectosConCumplimiento = data.map((proyecto) => ({
           ...proyecto,
           cumplimiento: parseInt(proyecto.cumplimiento) || 0,
         }));
 
         setProyectos(proyectosConCumplimiento);
-
-        // Calculamos totales para gráficos
         setTotalProyectos(proyectosConCumplimiento.length);
         setProyectosCompletados(
           proyectosConCumplimiento.filter((p) => p.cumplimiento === 100).length
@@ -53,7 +67,7 @@ const Dashboard = () => {
     };
 
     fetchProyectos();
-  }, [location]); // Dependencia en la ubicación para recargar los datos
+  }, [location]);
 
   const handleAgregarProyecto = async (e) => {
     e.preventDefault();
@@ -151,7 +165,7 @@ const Dashboard = () => {
         <nav>
           <ul className="list-group list-group-flush">
             <li className="list-group-item">
-              <Link to="/">
+              <Link to="/dashboard">
                 <i className="bi bi-house-door-fill"></i> Inicio
               </Link>
             </li>
@@ -160,32 +174,28 @@ const Dashboard = () => {
                 <i className="bi bi-card-list"></i> Proyectos
               </Link>
             </li>
-            <li className="list-group-item">
-              <Link to="/proyectos/vista">
-                <i className="bi bi-eye-fill"></i> Vista Proyectos
-              </Link>
-            </li>
-            <li className="list-group-item">
-              <a href="#">
-                <i className="bi bi-gear-fill"></i> Ajustes
-              </a>
-            </li>
           </ul>
         </nav>
       </aside>
 
       {/* Main content */}
       <div className="main-content p-4">
-        <nav className="navbar navbar-expand-lg mb-4 bg-white shadow">
-          <a className="navbar-brand" href="#">
-            <i className="bi bi-layout-text-sidebar-reverse"></i> Portafolio Admin
-          </a>
+        <nav className="navbar navbar-expand-lg bg-white shadow mb-4">
+          <div className="container-fluid">
+            <span className="navbar-brand">
+              Bienvenido, <strong>{usuario?.nombre || 'Usuario'}</strong>
+            </span>
+            <button className="btn btn-outline-danger" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
+          </div>
         </nav>
 
         <h2 className="text-center mb-4">Dashboard de Proyectos</h2>
 
-        {/* Cards */}
+        {/* Tarjetas */}
         <div className="row mb-4">
+          {/* Total proyectos */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-primary shadow">
               <div className="card-body">
@@ -194,6 +204,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+          {/* Proyectos completados */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-success shadow">
               <div className="card-body">
@@ -202,6 +213,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+          {/* Proyectos pendientes */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-danger shadow">
               <div className="card-body">
@@ -328,6 +340,8 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
 
 
 
