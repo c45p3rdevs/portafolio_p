@@ -27,24 +27,20 @@ const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Cargar usuario autenticado al montar el componente
+  // Validar sesión al cargar el componente
   useEffect(() => {
     const authData = JSON.parse(localStorage.getItem('authData'));
     if (authData && authData.token) {
-      setUsuario(authData.usuario); // Almacena el nombre del usuario
+      setUsuario(authData.usuario);
     } else {
-      navigate('/'); // Redirige al login si no hay sesión
+      navigate('/', { replace: true }); // Redirigir al login si no hay sesión
     }
   }, [navigate]);
 
-  // Función para cerrar sesión
-  const handleLogout = () => {
-    localStorage.removeItem('authData');
-    navigate('/'); // Redirige al login
-  };
-
-  // Cargar proyectos
+  // Cargar proyectos cuando el usuario esté definido
   useEffect(() => {
+    if (!usuario) return;
+
     const fetchProyectos = async () => {
       try {
         const data = await getProyectos();
@@ -67,7 +63,13 @@ const Dashboard = () => {
     };
 
     fetchProyectos();
-  }, [location]);
+  }, [usuario, location]);
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem('authData');
+    navigate('/', { replace: true });
+  };
 
   const handleAgregarProyecto = async (e) => {
     e.preventDefault();
@@ -340,6 +342,11 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+
+
+
 
 
 

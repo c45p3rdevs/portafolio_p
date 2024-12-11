@@ -8,6 +8,8 @@ import {
 } from '../services/proyectos';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
+
+
 const ProyectosVista = () => {
   const [proyectos, setProyectos] = useState([]);
   const [filtro, setFiltro] = useState('');
