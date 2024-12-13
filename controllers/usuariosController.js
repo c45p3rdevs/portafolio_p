@@ -61,10 +61,10 @@ exports.loginUsuario = async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta.' });
     }
 
+    // Generar token sin expiración
     const token = jwt.sign(
       { id: usuario.id, rol: usuario.rol },
-      process.env.JWT_SECRET || 'secreto_super_seguro',
-      { expiresIn: '2h' } // Ajusta el tiempo de expiración
+      process.env.JWT_SECRET || 'secreto_super_seguro'
     );
 
     res.status(200).json({

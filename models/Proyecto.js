@@ -8,17 +8,16 @@ const Proyecto = sequelize.define('Proyecto', {
         primaryKey: true,
     },
     nombre: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     descripcion: {
         type: DataTypes.TEXT,
-        
+        allowNull: false,
     },
-    
     fecha_estimada: {
         type: DataTypes.DATEONLY,
+        allowNull: false,
     },
     fecha_real: {
         type: DataTypes.DATEONLY,
@@ -33,9 +32,15 @@ const Proyecto = sequelize.define('Proyecto', {
     },
     evidencia: {
         type: DataTypes.STRING,
+        allowNull: true,
     },
     observaciones: {
         type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    usuarioId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     fecha_creacion: {
         type: DataTypes.DATE,

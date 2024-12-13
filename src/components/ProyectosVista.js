@@ -258,4 +258,3 @@ const ProyectosVista = () => {
 };
 
 export default ProyectosVista;
-
