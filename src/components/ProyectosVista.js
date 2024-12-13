@@ -8,8 +8,6 @@ import {
 } from '../services/proyectos';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
-
-
 const ProyectosVista = () => {
   const [proyectos, setProyectos] = useState([]);
   const [filtro, setFiltro] = useState('');
@@ -17,7 +15,7 @@ const ProyectosVista = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaEstimada, setFechaEstimada] = useState('');
-  const [cumplimiento, setCumplimiento] = useState(0); // Inicializado como número
+  const [cumplimiento, setCumplimiento] = useState(0);
 
   useEffect(() => {
     const fetchProyectos = async () => {
@@ -97,9 +95,7 @@ const ProyectosVista = () => {
           color: 'white',
         }}
       >
-        <div className="text-center py-4">
-         
-        </div>
+        <div className="text-center py-4"></div>
         <nav>
           <ul className="list-group list-group-flush">
             <li className="list-group-item" style={{ background: 'transparent' }}>
@@ -183,14 +179,12 @@ const ProyectosVista = () => {
                   <p>
                     <strong>Fecha Estimada:</strong> {proyecto.fecha_estimada}
                   </p>
-
                   <ProgressBar
                     now={proyecto.cumplimiento}
                     label={`${proyecto.cumplimiento}%`}
                     striped
                     variant="success"
                   />
-
                   <button
                     className="btn btn-primary btn-sm me-2 mt-2"
                     onClick={() => handleEditar(proyecto)}
@@ -258,98 +252,10 @@ const ProyectosVista = () => {
             </tbody>
           </table>
         </div>
-
-        {/* Modal para edición */}
-        {editando && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3 className="modal-title">Editar Proyecto</h3>
-                <button
-                  type="button"
-                  className="close-button"
-                  onClick={() => setEditando(null)}
-                >
-                  &times;
-                </button>
-              </div>
-              <div className="modal-body">
-                <form onSubmit={handleGuardarEdicion}>
-                  <div className="form-group">
-                    <label>Nombre del Proyecto:</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Descripción:</label>
-                    <textarea
-                      className="form-control"
-                      value={descripcion}
-                      onChange={(e) => setDescripcion(e.target.value)}
-                      required
-                    ></textarea>
-                  </div>
-                  <div className="form-group">
-                    <label>Fecha Estimada:</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={fechaEstimada}
-                      onChange={(e) => setFechaEstimada(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Cumplimiento (%):</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={cumplimiento}
-                      onChange={(e) => setCumplimiento(e.target.value)}
-                      max="100"
-                      min="0"
-                      required
-                    />
-                  </div>
-                  <div className="modal-footer">
-                    <button type="submit" className="btn btn-primary">
-                      Guardar
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setEditando(null)}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
 export default ProyectosVista;
-
-
-
-
-
-
-
-
-
-
-
-
-
 

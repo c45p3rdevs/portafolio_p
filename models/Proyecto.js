@@ -24,8 +24,12 @@ const Proyecto = sequelize.define('Proyecto', {
         type: DataTypes.DATEONLY,
     },
     cumplimiento: {
-        type: DataTypes.ENUM('Si', 'No'),
-        defaultValue: 'No',
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            min: 0,
+            max: 100,
+        },
     },
     evidencia: {
         type: DataTypes.STRING,

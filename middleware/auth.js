@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware para verificar el token
+const secretKey = process.env.JWT_SECRET || 'secreto_super_seguro';
+
 const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '') || req.query.token;
 
@@ -9,7 +10,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'claveSecreta');
+    const decoded = jwt.verify(token, secretKey);
     req.user = decoded;
     next();
   } catch (error) {
@@ -18,7 +19,6 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// Middleware para verificar si el usuario es administrador
 const verifyAdmin = (req, res, next) => {
   if (!req.user || req.user.rol !== 'admin') {
     return res.status(403).json({ message: 'Acceso denegado, no eres administrador.' });
@@ -27,4 +27,5 @@ const verifyAdmin = (req, res, next) => {
 };
 
 module.exports = { verifyToken, verifyAdmin };
+
 

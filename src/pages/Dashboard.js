@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [proyectosCompletados, setProyectosCompletados] = useState(0);
   const [proyectosPendientes, setProyectosPendientes] = useState(0);
 
-  const [usuario, setUsuario] = useState(null); // Almacena datos del usuario autenticado
+  const [usuario, setUsuario] = useState(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fechaEstimada, setFechaEstimada] = useState('');
@@ -27,26 +27,30 @@ const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Validar sesión al cargar el componente
+  // Cargar usuario autenticado
   useEffect(() => {
     const authData = JSON.parse(localStorage.getItem('authData'));
     if (authData && authData.token) {
       setUsuario(authData.usuario);
     } else {
-      navigate('/', { replace: true }); // Redirigir al login si no hay sesión
+      navigate('/');
     }
   }, [navigate]);
 
-  // Cargar proyectos cuando el usuario esté definido
-  useEffect(() => {
-    if (!usuario) return;
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem('authData');
+    navigate('/');
+  };
 
+  // Cargar proyectos
+  useEffect(() => {
     const fetchProyectos = async () => {
       try {
         const data = await getProyectos();
         const proyectosConCumplimiento = data.map((proyecto) => ({
           ...proyecto,
-          cumplimiento: parseInt(proyecto.cumplimiento) || 0,
+          cumplimiento: parseInt(proyecto.cumplimiento, 10) || 0,
         }));
 
         setProyectos(proyectosConCumplimiento);
@@ -59,17 +63,12 @@ const Dashboard = () => {
         );
       } catch (error) {
         console.error('Error al obtener los proyectos:', error);
+        setError('Error al obtener los proyectos.');
       }
     };
 
     fetchProyectos();
-  }, [usuario, location]);
-
-  // Función para cerrar sesión
-  const handleLogout = () => {
-    localStorage.removeItem('authData');
-    navigate('/', { replace: true });
-  };
+  }, [location]);
 
   const handleAgregarProyecto = async (e) => {
     e.preventDefault();
@@ -79,7 +78,7 @@ const Dashboard = () => {
       nombre,
       descripcion,
       fecha_estimada: fechaEstimada,
-      cumplimiento: parseInt(cumplimiento),
+      cumplimiento: parseInt(cumplimiento, 10) || 0,
     };
 
     try {
@@ -97,7 +96,7 @@ const Dashboard = () => {
         setProyectos((prevProyectos) => [...prevProyectos, proyectoConId]);
 
         setTotalProyectos((prev) => prev + 1);
-        if (parseInt(cumplimiento) === 100) {
+        if (nuevoProyecto.cumplimiento === 100) {
           setProyectosCompletados((prev) => prev + 1);
         } else {
           setProyectosPendientes((prev) => prev + 1);
@@ -111,7 +110,10 @@ const Dashboard = () => {
       handleCloseModal();
     } catch (error) {
       console.error('Error al procesar el proyecto:', error);
-      setError('No se pudo procesar el proyecto. Verifica los datos ingresados.');
+      setError(
+        error.response?.data?.error ||
+          'No se pudo procesar el proyecto. Verifica los datos ingresados.'
+      );
     }
   };
 
@@ -197,7 +199,6 @@ const Dashboard = () => {
 
         {/* Tarjetas */}
         <div className="row mb-4">
-          {/* Total proyectos */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-primary shadow">
               <div className="card-body">
@@ -206,7 +207,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          {/* Proyectos completados */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-success shadow">
               <div className="card-body">
@@ -215,7 +215,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          {/* Proyectos pendientes */}
           <div className="col-md-4">
             <div className="card modern-card bg-gradient-danger shadow">
               <div className="card-body">
@@ -342,14 +341,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-
-
-
-
-
-
-
-
-
-

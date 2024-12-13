@@ -10,7 +10,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
         const proyectos = await Proyecto.findAll();
         res.status(200).json(proyectos);
     } catch (error) {
-        console.error('Error al obtener los proyectos', error);
+        console.error('Error al obtener los proyectos:', error.message);
         res.status(500).json({ message: 'Error al obtener los proyectos', error: error.message });
     }
 });
@@ -22,7 +22,7 @@ router.get('/mis-proyectos', verifyToken, async (req, res) => {
         const proyectos = await Proyecto.findAll({ where: { usuarioId: userId } });
         res.status(200).json(proyectos);
     } catch (error) {
-        console.error('Error al obtener proyectos del usuario', error);
+        console.error('Error al obtener proyectos del usuario:', error.message);
         res.status(500).json({ message: 'Error al obtener proyectos del usuario', error: error.message });
     }
 });
@@ -30,12 +30,14 @@ router.get('/mis-proyectos', verifyToken, async (req, res) => {
 // Crear un proyecto nuevo
 router.post(
     '/',
-    verifyToken, // Requiere autenticación
+    verifyToken,
     [
         body('nombre').notEmpty().withMessage('El nombre es requerido'),
         body('descripcion').notEmpty().withMessage('La descripción es requerida'),
         body('fecha_estimada').notEmpty().withMessage('La fecha estimada es requerida'),
-        body('cumplimiento').isInt({ min: 0, max: 100 }).withMessage('El cumplimiento debe ser un porcentaje válido (0-100)'),
+        body('cumplimiento')
+            .isInt({ min: 0, max: 100 })
+            .withMessage('El cumplimiento debe estar entre 0 y 100'),
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -44,31 +46,17 @@ router.post(
         }
 
         try {
-            const {
-                nombre,
-                descripcion,
-                fecha_estimada,
-                fecha_real,
-                cumplimiento,
-                evidencia,
-                observaciones,
-            } = req.body;
+            const { nombre, descripcion, fecha_estimada, cumplimiento } = req.body;
 
             const nuevoProyecto = await Proyecto.create({
                 nombre,
                 descripcion,
                 fecha_estimada,
-                fecha_real,
                 cumplimiento,
-                evidencia,
-                observaciones,
                 usuarioId: req.user.id, // Relacionar el proyecto con el usuario autenticado
             });
 
-            res.status(201).json({
-                message: 'Proyecto creado con éxito',
-                proyecto: nuevoProyecto,
-            });
+            res.status(201).json({ message: 'Proyecto creado con éxito', proyecto: nuevoProyecto });
         } catch (error) {
             console.error('Error al crear el proyecto:', error.message);
             res.status(500).json({ message: 'Error al crear el proyecto', error: error.message });
@@ -80,15 +68,7 @@ router.post(
 router.put('/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const {
-            nombre,
-            descripcion,
-            fecha_estimada,
-            fecha_real,
-            cumplimiento,
-            evidencia,
-            observaciones,
-        } = req.body;
+        const { nombre, descripcion, fecha_estimada, cumplimiento } = req.body;
 
         const proyecto = await Proyecto.findByPk(id);
 
@@ -97,20 +77,14 @@ router.put('/:id', verifyToken, async (req, res) => {
         }
 
         // Verificar si el usuario es propietario del proyecto o administrador
-        if (proyecto.usuarioId !== req.user.id && req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'No tienes permiso para editar este proyecto' });
+        if (proyecto.usuarioId !== req.user.id && req.user.rol !== 'admin') {
+            return res
+                .status(403)
+                .json({ message: 'No tienes permiso para editar este proyecto' });
         }
 
         // Actualizar el proyecto
-        await proyecto.update({
-            nombre,
-            descripcion,
-            fecha_estimada,
-            fecha_real,
-            cumplimiento,
-            evidencia,
-            observaciones,
-        });
+        await proyecto.update({ nombre, descripcion, fecha_estimada, cumplimiento });
 
         res.status(200).json({ message: 'Proyecto actualizado con éxito', proyecto });
     } catch (error) {
@@ -131,18 +105,22 @@ router.delete('/:id', verifyToken, async (req, res) => {
         }
 
         // Verificar si el usuario es propietario del proyecto o administrador
-        if (proyecto.usuarioId !== req.user.id && req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'No tienes permiso para eliminar este proyecto' });
+        if (proyecto.usuarioId !== req.user.id && req.user.rol !== 'admin') {
+            return res
+                .status(403)
+                .json({ message: 'No tienes permiso para eliminar este proyecto' });
         }
 
         await proyecto.destroy();
 
         res.status(200).json({ message: 'Proyecto eliminado con éxito' });
     } catch (error) {
-        console.error('Error al eliminar el proyecto:', error);
+        console.error('Error al eliminar el proyecto:', error.message);
         res.status(500).json({ message: 'Error al eliminar el proyecto', error: error.message });
     }
 });
 
 module.exports = router;
+
+
 
